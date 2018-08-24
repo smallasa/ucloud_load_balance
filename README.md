@@ -49,12 +49,13 @@ server {
 >### 3.HTTP自动跳转HTTPS逻辑
 ```text
 当在浏览器中访问 http://xxx.com 时，
-首先，通过Ucloud的负载均衡(80)端口 将请求转发 到 nginx代理的80端口上
+首先，通过Ucloud的负载均衡(80)端口将请求转发到nginx代理的80端口上
 其次，nginx发现有监听80端口，根据请求策略做了301重定向，所以会将请求跳转到 https://xxx.com
-然后，通过访问 https://xxx.com，又将请求重新访问 Ucloud的负载均衡(443)端口，Ucloud的负载均衡(443)进行反向代理，将请求转发到 nignx的443端口上
+然后，通过访问 https://xxx.com，又将重新访问 Ucloud的负载均衡(443)
+然后，Ucloud的负载均衡(443) 进行反向代理，将请求转发到nignx的443端口上
 最后，nginx发现有监听443端口，根据请求策略，将请求反向代理到后端业务服务器上
 
-之所以这么操作，是由于Ucloud负载均衡在上传SSL证书后，做HTTPS代理，无法正常反向代理到nginx端。这是由于nginx中也配置了SSL证书。
-如果，使用Ucloud负载均衡的HTTPS协议，那么nginx端只能使用HTTP协议，不能使用HTTPS协议。
-由于Ucloud负载均衡模块服务还有点欠缺，没有办法做到HTTP自动跳转到HTTPS，只能在Nginx端，进行重新转发，用于临时解决该问题。
+之所以这么操作，是有两个原因：
+1.Ucloud负载均衡服务使用HTTPS协议后，nginx端的配置文件就不能在使用SSL证书，不然nginx无法处理请求。
+2.Ucloud负载均衡服务功能欠缺，没有现成的方式直接将HTTP请求跳转为HTTPS
 ```
